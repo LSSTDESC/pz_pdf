@@ -1,0 +1,29 @@
+
+modules: pz_pdf
+
+stages:
+    - name: pz_pdfStage1
+      nprocess: 1
+
+output_dir: ./outputs
+
+inputs:
+    some_input_tag: test/input_data.txt
+    config: test/config.yml
+
+resume: False
+log_dir: ./test/logs
+pipeline_log: ./test/log.txt
+
+
+
+launcher:
+    globals: {lazyErrors: true}
+    sites:
+    - auth: {channel: null}
+      execution: {
+        executor: threads, 
+        maxThreads: 4, 
+        provider: null
+    }
+      site: Local_Threads
