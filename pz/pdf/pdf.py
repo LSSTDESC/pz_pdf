@@ -14,7 +14,7 @@ class PZPDF(PipelineStage):
         ('some_output_tag', TextFile),
         # More inputs can go here
     ]
-    required_config = {
+    config_options = {
         'price_of_fish': float,
         'number_of_roads': 42,
         }
