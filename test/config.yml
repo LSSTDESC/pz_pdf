@@ -1,4 +1,4 @@
 # This is an example configuration file
-pz_pdfStage1:
-  number_of_roads: 42
+PZPDF:
+  #number_of_roads: 42
   price_of_fish: 17.50

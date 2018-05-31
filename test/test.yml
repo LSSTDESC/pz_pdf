@@ -1,15 +1,16 @@
 
-modules: pz_pdf
+modules: pz.pdf
+
+launcher: local
 
 stages:
-    - name: pz_pdfStage1
+    - name: PZPDF
       nprocess: 1
 
 output_dir: ./outputs
 
 inputs:
     some_input_tag: test/input_data.txt
-    config: test/config.yml
 
 resume: False
 log_dir: ./test/logs
@@ -27,3 +28,6 @@ launcher:
         provider: null
     }
       site: Local_Threads
+
+launcher: local
+config: ./test/config.yml

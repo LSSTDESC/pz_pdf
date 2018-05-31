@@ -7,7 +7,7 @@ class PZPDF(PipelineStage):
     name = "PZPDF"
     #
     inputs = [
-        ('config', YamlFile),
+        #('config', YamlFile),
         ('some_input_tag', TextFile),
     ]
     outputs = [
@@ -15,15 +15,15 @@ class PZPDF(PipelineStage):
         # More inputs can go here
     ]
     required_config = {
-        'price_of_fish': None,
+        'price_of_fish': float,
         'number_of_roads': 42,
         }
 
     def run(self):
-        config = self.read_config()
+        #config = self.read_config()
 
-        fish = config['price_of_fish']
-        roads = config['number_of_roads']
+        fish = self.config['price_of_fish']
+        roads = self.config['number_of_roads']
 
         input_file = self.open_input('some_input_tag')
         input_data = input_file.read()
