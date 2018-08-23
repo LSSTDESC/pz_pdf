@@ -4,4 +4,4 @@ outputs/*.hdf
 outputs/*.sacc
 outputs/*.fits
 .DS_Store
-notebooks/.ipynb_checkpoints
+doc/notebooks/.ipynb_checkpoints
