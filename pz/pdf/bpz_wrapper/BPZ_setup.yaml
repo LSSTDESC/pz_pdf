@@ -1,8 +1,10 @@
 
 
+# Set the BPZPATH environment variable - currently no code in the script to do this
+bpz_path = "/home/will_h/photoz/pipelines/pz_pdf/pz/BPZ"
 
 
-# Centres of minimum and maximum redshift bins, and the number of bins.
+# Centres of minimum and maximum redshift bins, and the spacing of bins.
 MIN_z: 0.01
 N_BIN: 350
 Dz: 0.01
@@ -20,13 +22,17 @@ Z_NAME: 'redshift'
 # ID column name
 ID_NAME: 'galaxy_id'
 
-# sources of data, with path (for DC2 this is contained in
+# source of data, with optional path (for DC2 this is contained in
 # the module GCRCatalogs)
-SOURCES: {'DC2':'./'}
+SOURCE: ['DC2',]
+
+# columns file - BPZ expects a file defining the columns with the same name as the input but with
+# extension .columns. We will simply soft link the file defined here for that purpose.
+default_cols_file: "LSST_BPZ_default.columns"
 
 # Do we want to read the magnitude errors from the catalogue
 # (will generate them if not) - drop this, it'll be handled by Sam's script
 #READ_ERRORS: 
 
 # Otherwise, define the image depths - again, redundant
-IMG_DEPTHS: [25.3,25.3,25.3,25.3,25.3,25.3]
+#IMG_DEPTHS: [25.3,25.3,25.3,25.3,25.3,25.3]
