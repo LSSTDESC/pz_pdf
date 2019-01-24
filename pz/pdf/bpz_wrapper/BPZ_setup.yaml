@@ -1,0 +1,32 @@
+
+
+
+
+# Centres of minimum and maximum redshift bins, and the number of bins.
+MIN_z: 0.01
+N_BIN: 350
+Dz: 0.01
+
+
+# Names of the magnitude columns in the database,
+# in order:
+# [u,g,r,i,z,Y]
+MAG_NAMES: ['mag_u_lsst','mag_g_lsst','mag_r_lsst','mag_i_lsst','mag_z_lsst','mag_Y_lsst']
+MAG_ERR_NAMES: ['magerr_u_lsst','magerr_g_lsst','magerr_r_lsst','magerr_i_lsst','magerr_z_lsst','magerr_Y_lsst']
+
+# redshift column name
+Z_NAME: 'redshift'
+
+# ID column name
+ID_NAME: 'galaxy_id'
+
+# sources of data, with path (for DC2 this is contained in
+# the module GCRCatalogs)
+SOURCES: {'DC2':'./'}
+
+# Do we want to read the magnitude errors from the catalogue
+# (will generate them if not) - drop this, it'll be handled by Sam's script
+#READ_ERRORS: 
+
+# Otherwise, define the image depths - again, redundant
+IMG_DEPTHS: [25.3,25.3,25.3,25.3,25.3,25.3]
