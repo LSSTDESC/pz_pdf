@@ -1,10 +1,3 @@
-import numpy as np
-import h5py
-import sys
-import copy
-import yaml
-import subprocess
-
 """
 Take BPZ output prob file (in ascii by default) and turn it into standard style hdf5 file, to go into pdf_combine.
 
@@ -13,11 +6,18 @@ Output name must include code identifier (BPZ), perhaps version, some info regar
 h5 file should have two datasets, /ID/ and /PDF/. Can add a further info - date, data blocks, version etc. as attributes of /ID/?
 """
 
-def reform_bpz(block_num, block_size):
+def reform_bpz(i_block, config):
 
-    config = yaml.load(config_file)
+    import numpy as np
+    import h5py
+    import sys
+    import copy
+    import subprocess
 
-    fname = 'BPZ_{0}_{1}_{2}.probs'.format(config['SOURCE'][0], block_num, block_size)
+    # this is a bit shitty, do it properly *****
+    block_size = int(config['N_OBJ_TOT'] / config['N_BLOCK'])
+
+    fname = 'BPZ_{0}_{1:0.0f}_{2:0.0f}.probs'.format(config['SOURCE'][0], i_block, block_size)
     out_name = fname.split('.')+'.h5'
 
     probs = np.loadtxt(fname)
@@ -43,5 +43,7 @@ def reform_bpz(block_num, block_size):
     f.close()
 
     # clean up by deleting the BPZ input .fits and .column files, and the BPZ outputs, .bpz and .probs
-    subprocess.call("rm {0} {1} *.bpz *.probs".format(fname.split('.')+'.fits',
-                                                      fname.split('.')+'.columns'), shell=True)
+    subprocess.call("rm {} {} {} {}".format(fname.split('.')+'.fits',
+                                            fname.split('.')+'.columns',
+                                            fname.split('.')+'.bpz',
+                                            fname.split('.')+'.probs'), shell=True)

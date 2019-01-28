@@ -1,14 +1,10 @@
-
-
 # Set the BPZPATH environment variable - currently no code in the script to do this
-bpz_path = "/home/will_h/photoz/pipelines/pz_pdf/pz/BPZ"
-
+BPZ_PATH = "/home/will_h/photoz/pipelines/pz_pdf/pz/BPZ"
 
 # Centres of minimum and maximum redshift bins, and the spacing of bins.
 MIN_z: 0.01
 N_BIN: 350
 Dz: 0.01
-
 
 # Names of the magnitude columns in the database,
 # in order:
@@ -25,10 +21,32 @@ ID_NAME: 'galaxy_id'
 # source of data, with optional path (for DC2 this is contained in
 # the module GCRCatalogs)
 SOURCE: ['DC2',]
+N_OBJ_TOT: 10000
+N_BLOCK: 2
 
 # columns file - BPZ expects a file defining the columns with the same name as the input but with
 # extension .columns. We will simply soft link the file defined here for that purpose.
-default_cols_file: "LSST_BPZ_default.columns"
+# This file has to match the naming convention above: MAG_NAMES, MAG_ERR_NAMES, Z_NAME, ID_NAME
+DEFAULT_COLS_FILE: "LSST_BPZ_default.columns"
+
+# Write new .columns file? If True the DEFAULT_COLS_FILE will be over-written
+NEW_COLS_FILE: False
+
+# parallelised running
+N_JOBS: 2
+
+# Dictionary of parameters to be written to BPZ parameter file (in addition to those above).
+# These will (should!) overwrite the parameter values in the bpz_desc script
+# example:
+# BPZ_DICT: {'INTERP' : 4}
+BPZ_DICT: {'INTERP' : 4}
+
+# Name of BPZ parameter file, leave blank to not write a parameter file
+PAR_FILE: "BPZ_DC2.par"
+
+
+#======================
+# OLD JUNK - superceded by Sam's work on survey emulation
 
 # Do we want to read the magnitude errors from the catalogue
 # (will generate them if not) - drop this, it'll be handled by Sam's script
@@ -36,3 +54,4 @@ default_cols_file: "LSST_BPZ_default.columns"
 
 # Otherwise, define the image depths - again, redundant
 #IMG_DEPTHS: [25.3,25.3,25.3,25.3,25.3,25.3]
+

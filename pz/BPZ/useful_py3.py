@@ -310,6 +310,7 @@ class params:
     def update(self,dict):
         """Update the parameter information with a dictionary"""
         for key in list(dict.keys()):
+            print("Hey, I'm updating something")
             self.d[key]=dict[key]
                    
     def check(self):

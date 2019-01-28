@@ -722,7 +722,7 @@ claves=list(pars.d.keys())
 claves.sort()
 for key in claves:
     if type(pars.d[key])==type((1,)):
-        cosa=join(list(pars.d[key]),',')
+        cosa=str.join(',',(list(pars.d[key])))
     else:
         cosa=str(pars.d[key])
     if get_z: output.write('##'+key.upper()+'='+cosa+'\n')

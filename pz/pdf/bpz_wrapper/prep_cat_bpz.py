@@ -1,31 +1,44 @@
-#!/global/common/software/lsst/common/miniconda/py3-4.2.12/bin/python
 import numpy as np
 import astropy.io.fits as pyfits
 import yaml
 
-
 """
 Author: Will Hartley
 
-** This is currently written specifically for protoDC2...
-** Number of LSST bands is hard-coded to be 6
+** Number of LSST bands is hard-coded to be 6 ***
 
-
-(Should write in python3)
 Prepare the photometric catalogue in some standard form.
 We'll use a yaml file to perform the translations.
 For the minute, we'll just add an explicit protoDC2 form.
 
-The routine extracts a subset from the database (or gc catalogue of dc2), writes it out as a fits file with a unique name that has standard column names (so that the .columns file BPZ needs can just be copied).
-
-Use yaml file to set what these are.
-
-Want to use arg parsing to set flags, e.g. protoDC2, so we know where to get the data from. Want sample size, and whether it is to be sequential or random.
-If sequential, we want to know which number it is in sequence. Random can take a seed. i.e. --sequential 5 or --random 15
-
-Should make the class more generic. save_cat should not depend on the source, for instance. Want specific dc2 (etc.) attribute that just changes how data is read in. 
-Can we assume that we will interact with DC2 and other sources in a similar way?
+The routines are called by run_BPZ_DESC to extract a subset from the database (gcr catalogue of dc2), writes it out as a fits file with a unique name that has standard column names (so that the .columns file BPZ can just be copied / linked).
 """
+
+def read_data(i_block, config):
+
+
+
+    return catalogue_block
+
+
+
+def dump_cat(cat, i_block, config):
+    """
+    Save the catalogue data extracted earlier into a fits file for BPZ to read in.
+    The column names must correspond to the .columns file.
+    """
+
+
+    
+def write_bpz_par(config):
+
+
+
+
+
+"""
+OLD RUBBISH
+
 
 class LSST_cat:
 
@@ -113,3 +126,5 @@ if __name__ == '__main__':
         # e.g. dc2_cat_seq_$seq_num.fits
         # or dc2_cat_rand_$cat_size_$seed.fits
         cat.save_cat()
+
+"""
