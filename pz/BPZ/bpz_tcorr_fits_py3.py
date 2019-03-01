@@ -61,18 +61,19 @@ pars=params()
 
 pars.d={
     'SPECTRA':'CWWSB4_6.list', # template list 
-    'PRIOR':   'cosmos_Laigle_py3',      # prior name
+    'PRIOR':   'hdfn_gen',      # prior name                                                             
+#    'PRIOR':   'cosmos_Laigle_py3',      # prior name
     #'PRIOR':   'sva1_weights',      # prior name
 #    'PRIOR':   'y1a1_test',      # prior name
     'NTYPES':None,  # Number of Elliptical, Spiral, and Starburst/Irregular templates  Default: 1,2,n-3
     'DZ':      0.01,        # redshift resolution
     'ZMIN':    0.01,        # minimum redshift
-    'ZMAX':    3.5,         # maximum redshift
+    'ZMAX':    10.0,         # maximum redshift
     'MAG':     'yes',       # Data in magnitudes?
     'FLUX_ZP': 30.,        # for converting m_0 and adjusting fluxes to AB scale from flux to mags.
     'MIN_MAGERR':   0.001,   # minimum magnitude uncertainty --DC
     'ODDS': 0.95,           # Odds threshold: affects confidence limits definition
-    'INTERP': 8,            # Number of interpolated templates between each of the original ones
+    'INTERP': 0,            # Number of interpolated templates between each of the original ones
     'EXCLUDE': 'none',      # Filters to be excluded from the estimation
     'NEW_AB': 'no',         # If yes, generate new AB files even if they already exist
     'CHECK': 'yes',          # Perform some checks, compare observed colors with templates, etc.
@@ -411,10 +412,11 @@ zp_errors=[]
 zp_offsets=[]
 for filter in filters:
     datos=col_pars.d[filter]
-    flux_cols.append(datos[0])
-    eflux_cols.append(datos[1])
-#    flux_cols.append(int(datos[0])-1)
-#    eflux_cols.append(int(datos[1])-1)
+####WILL'S WAY DOESN"T OFFSET INDECES
+#    flux_cols.append(datos[0])
+#    eflux_cols.append(datos[1])
+    flux_cols.append(int(datos[0])-1)
+    eflux_cols.append(int(datos[1])-1)
     cals.append(datos[2])
     zp_errors.append(datos[3])
     zp_offsets.append(datos[4])
@@ -427,8 +429,12 @@ eflux_cols=tuple(eflux_cols)
 #print(eflux_cols)
 
 #READ the flux and errors from obs_file
-f_obs=get_2Darray_fromfits(obs_file,flux_cols)
-ef_obs=get_2Darray_fromfits(obs_file,eflux_cols)
+###WILLS VERSION!!!
+##f_obs=get_2Darray_fromfits(obs_file,flux_cols)
+##ef_obs=get_2Darray_fromfits(obs_file,eflux_cols)
+
+f_obs=get_2Darray(obs_file,flux_cols)
+ef_obs=get_2Darray(obs_file,eflux_cols)
 #print(ef_obs[0])
 #f_obs=get_2Darray(obs_file,flux_cols)
 #ef_obs=get_2Darray(obs_file,eflux_cols)
@@ -552,30 +558,35 @@ for i in range(f_obs.shape[1]):
 		
 #Get m_0 (if present)
 if 'M_0' in col_pars.d:
-    #m_0_col=int(col_pars.d['M_0'])-1
-    #m_0=get_data(obs_file,m_0_col)
-    #print(col_pars.d['M_0'])
-    m_0=get_2Darray_fromfits(obs_file,tuple([col_pars.d['M_0'],]))
+    m_0_col=int(col_pars.d['M_0'])-1
+    m_0=get_data(obs_file,m_0_col)
+    print(col_pars.d['M_0'])
+###WILL'S m_0!
+###    m_0=get_2Darray_fromfits(obs_file,tuple([col_pars.d['M_0'],]))
     #print(m_0[0])
-    if pars.d['MAG']=='no':
-        m_0 = pars.d['FLUX_ZP']-2.5*log10(m_0)
+###WILL'S ADDITION OF FLUX_ZP!!  TAKE OUT FOR NOW
+###    if pars.d['MAG']=='no':
+###        m_0 = pars.d['FLUX_ZP']-2.5*log10(m_0)
     print((m_0[0]))
     m_0+=pars.d['DELTA_M_0'] # this only makes sense if m_0 is in mag - so assume this and convert.
 
 #Get the objects ID (as a string)
 if 'ID' in col_pars.d:
     #print col_pars.d['ID']
-    #id_col=int(col_pars.d['ID'])-1
-    id=get_long_fromfits(obs_file,col=col_pars.d['ID'])
+    id_col=int(col_pars.d['ID'])-1
+    id=get_str(obs_file,id_col)
+####WILL'S METHOD FROM FITS!
+####    id=get_long_fromfits(obs_file,col=col_pars.d['ID'])
     #id=get_str_fromfits(obs_file,id_col)
 else:
     id=list(map(str,list(range(1,len(f_obs[:,0])+1))))
 
 #Get spectroscopic redshifts (if present)
 if 'Z_S' in col_pars.d:
-    #z_s_col=int(col_pars.d['Z_S'])-1
-    z_s=get_2Darray_fromfits(obs_file,tuple([col_pars.d['Z_S'],]))
-    #z_s=get_data(obs_file,z_s_col)
+    z_s_col=int(col_pars.d['Z_S'])-1
+###WILL'S METHOD WITH FITS
+###    z_s=get_2Darray_fromfits(obs_file,tuple([col_pars.d['Z_S'],]))
+    z_s=get_data(obs_file,z_s_col)
 
 #Get the X,Y coordinates
 if 'X' in col_pars.d:
@@ -682,7 +693,7 @@ if 'OTHER' in col_pars.d:
             lista=[]
             for i in range(len(others)):
                 lista.append(others[i][j])
-            other.append(join(lista))
+            other.append(" ".join(lista))
     else:
         other=others
 
@@ -784,7 +795,7 @@ if pars.d['ZC'] :
 
 
 #Output format
-format='%'+repr(maximum(5,len(str(id[0]))))+'i' #ID format
+format='%'+repr(maximum(5,len(str(id[0]))))+'s' #ID format
 format=format+pars.d['N_PEAKS']*' %.3f %.3f  %.3f %.3f %.5f'+' %.3f %.3f %10.3f'
 
 #Add header with variable names to the output file

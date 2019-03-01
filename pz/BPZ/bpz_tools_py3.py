@@ -32,7 +32,7 @@ ab_clip=1e-6
 
 
 #Initialize path info
-bpz_dir=os.getenv('BPZPATH')
+bpz_dir=os.getenv('BPZPY3PATH')
 fil_dir=bpz_dir+'/FILTER/'
 sed_dir=bpz_dir+'/SED/'
 ab_dir=bpz_dir+'/AB/'
@@ -49,7 +49,7 @@ def flux(xsr,ys,yr,ccd='yes',units='nu'):
     norm=trapz(yr,xsr)
     f_l=trapz(ys*yr,xsr)/norm
     if units=='nu':
-        lp=sqrt(norm/trapz(yr/xsr/xsr,xsr))      #Pivotal wavelenght	
+        lp=sqrt(norm/trapz(yr/xsr/xsr,xsr))#Pivotal wavelength	
         return f_l*lp**2/clight_AHz
     else: return f_l
 
@@ -704,7 +704,7 @@ def ABflux(sed,filter,madau='yes'):
             if madau!='no': ys_z=etau_madau(x_r,z_ab[i])*ys_z
             f[i]=trapz(ys_z*r,x_r)*const        
 
-    ABoutput=ab_dir+split(sed,'/')[-1][:-4]+'.'+split(filter,'/')[-1][:-4]+'.AB'
+    ABoutput=ab_dir+sed.split('/')[-1][:-4]+'.'+filter.split('/')[-1][:-4]+'.AB'
 
     #print "Clipping the AB file"
     #fmax=max(f)
@@ -1057,9 +1057,9 @@ class p_bayes:
         self.p=dummy[:,1:]
         del(dummy)
         header=get_header(file)
-        header=split(header,'(')[2]
-        header=split(header,')')[0]
-        zmin,zmax,dz=list(map(float,tuple(split(header,','))))
+        header=header.split('(')[2]
+        header=header.split(')')[0]
+        zmin,zmax,dz=list(map(float,tuple(header.split(','))))
         self.z=arange(zmin,zmax,dz)
 
     def plot_p(self,id,limits=None):

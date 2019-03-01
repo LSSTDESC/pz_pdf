@@ -6,6 +6,7 @@
 
 from coetools_py3 import *
 import string
+import locale
 
 #import fitsio
 try:
@@ -28,7 +29,7 @@ from compress2_py3 import compress2 as compress
 def strspl(s):
     if type(s) == str:
         if string.find(s, ' ') > -1:
-            s = string.split(s)
+            s = s.split()
     return s
 
 def pint(A, n=0):
@@ -47,7 +48,7 @@ def pintup(A, n=0):
 
 if pyfitsloaded:
     # UNLESS $NUMERIX IS SET TO numpy, pyfits(v1.1b) USES NumArray
-    pyfitsusesnumpy = (string.atof(pyfits.__version__[:3]) >= 1.1) and (numerix == 'numpy')
+    pyfitsusesnumpy = (locale.atof(pyfits.__version__[:3]) >= 1.1) and (numerix == 'numpy')
     if not pyfitsusesnumpy:
         print('You probably should have done this first: setenv NUMERIX numpy')
         import numarray
@@ -214,7 +215,7 @@ def loaddict1(filename, dir="", silent=0):
     dict = {}
     for line in lines:
         if line[0] != '#':
-            words = string.split(line)
+            words = line.split()
             key = str2num(words[0])
             val = ''  # if nothing there
             if len(words) == 2:
@@ -233,7 +234,7 @@ def loaddict(filename, dir="", silent=0):
     dict = {}
     for line in lines:
         if line[0] != '#':
-            words = string.split(line)
+            words = line.split()
             key = str2num(words[0])
             val = ''  # if nothing there
             valstr = string.join(words[1:], ' ')
@@ -241,7 +242,7 @@ def loaddict(filename, dir="", silent=0):
             if valstr[0] in '[(' and valstr[-1] in '])':  # LIST / TUPLE!
                 valtuple = valstr[0] == '('
                 valstr = valstr[1:-1].replace(',', '')
-                words[1:] = string.split(valstr)
+                words[1:] = valstr.split()
             if len(words) == 2:
                 val = str2num(words[1])
             elif len(words) > 2:
@@ -268,7 +269,7 @@ def loadcols(infile, format='', pl=0):
     while txt[0][0] == '#':
         txt = txt[1:]
     line = txt[0]
-    words = string.split(line)
+    words = line.split()
     ncols = len(words)
     data = [[]]
     for icol in range(ncols-1):
@@ -288,7 +289,7 @@ def loadcols(infile, format='', pl=0):
                 format += 'd'
             except:
                 try:
-                    datum = string.atof(word)
+                    datum = locale.atof(word)
                     format += 'f'
                 except:
                     format += 's'
@@ -298,7 +299,7 @@ def loadcols(infile, format='', pl=0):
     for line in txt:
         if line:
             if line[0] != '#':
-                words = string.split(line)
+                words = line.split()
                 if pl:
                     print(line)
                 for iword in range(len(words)):
@@ -310,13 +311,13 @@ def loadcols(infile, format='', pl=0):
                     word = words[iword]
                     formatum = format[iword]
                     if formatum == 'f':
-                        datum = string.atof(word)
+                        datum = locale.atof(word)
                     elif formatum == 'd':
                         try:
                             datum = string.atoi(word)
                         except:
                             #datum = int(round(string.atof(word)))
-                            datum = string.atof(word)
+                            datum = locale.atof(word)
                             try:
                                 datum = roundint(datum)
                                 if not (iword+1) in roundcols:
@@ -498,7 +499,7 @@ def savedata(data, filename, dir="", header="", separator="  ", format='', label
             collens = [] # REDO collens (IN CASE format WAS INPUT)
             mformat = ''
             separator = ' '
-            colformats = string.split(format, '%')[1:]
+            colformats = format.split('%')[1:]
             format = ''  # redoing format, too
             for ix in range(nx):
                 #print ix, colformats
@@ -521,22 +522,22 @@ def savedata(data, filename, dir="", header="", separator="  ", format='', label
                 if string.find(cf, 'e') > -1:
                     collen = 9 + colneg[ix]
                 else:
-                    cf = string.split(cf, '.')[0]  # FLOAT: Number before '.'
-                    cf = string.split(cf, 'd')[0]  # INT:   Number before 'd'
-                    collen = string.atoi(cf)
+                    cf = cf.split('.')[0]  # FLOAT: Number before '.'
+                    cf = cf.split('d')[0]  # INT:   Number before 'd'
+                    collen = locale.atoi(cf)
                 collens.append(collen)
         else:
             if not collens:
                 collens = [] # REDO collens (IN CASE format WAS INPUT)
-                colformats = string.split(format, '%')[1:]
+                colformats = format.split('%')[1:]
                 for ix in range(nx):
                     cf = colformats[ix]
                     colneg[ix] = string.find(cf, ' ') == -1
                     if string.find(cf, 'e') > -1:
                         collen = 9 + colneg[ix]
                     else:
-                        cf = string.split(cf, '.')[0]  # FLOAT: Number before '.'
-                        cf = string.split(cf, 'd')[0]  # INT:   Number before 'd'
+                        cf = cf.split('.')[0]  # FLOAT: Number before '.'
+                        cf = cf.split('d')[0]  # INT:   Number before 'd'
                         collen = string.atoi(cf)
                     if labels:
                         collen = max((collen, len(labels[ix])))  # MAKE COLUMN BIG ENOUGH TO ACCOMODATE LABEL
@@ -593,7 +594,7 @@ def savedata(data, filename, dir="", header="", separator="  ", format='', label
                     #headline += '# %2d %s\n' % (ix+1, descriptions[ix])
                 headline += '#\n'
                 headline += '#'
-                colformats = string.split(format, '%')[1:]
+                colformats = format.split('%')[1:]
                 if not silent:
                     print()
                 for ix in range(nx):
@@ -646,7 +647,7 @@ def savedata(data, filename, dir="", header="", separator="  ", format='', label
             headline += '  Explanations\n'
             header.append(headline)
             header.append('-'*80+'\n')
-            colformats = string.split(mformat)
+            colformats = mformat.split()
             byte = 1
             for ix in range(nx):
                 collen = collens[ix]
@@ -678,7 +679,7 @@ def savedata(data, filename, dir="", header="", separator="  ", format='', label
             if notes:
                 for inote in range(len(notes)):
                     headline = 'Note (%d): ' % (inote+1)
-                    note = string.split(notes[inote], '\n')
+                    note = notes[inote].split('\n')
                     headline += note[0]
                     if headline[-1] != '\n':
                         headline += '\n'
@@ -743,11 +744,11 @@ def loaddata(filename, dir="", silent=0, headlines=0):
     ny = len(sin) - headlines
     if ny == 0:
         if headlines:
-            ss = string.split(sin[headlines-1])[1:]
+            ss = sin[headlines-1].split()[1:]
         else:
             ss = []
     else:
-        ss = string.split(sin[headlines])
+        ss = sin[headlines].split()
 
     nx = len(ss)
     #size = [nx,ny]
@@ -756,14 +757,14 @@ def loaddata(filename, dir="", silent=0, headlines=0):
     sin = sin[headlines:ny+headlines]
 
     for iy in range(ny):
-        ss = string.split(sin[iy])
+        ss = sin[iy].split()
         for ix in range(nx):
             try:
-                data[iy,ix] = string.atof(ss[ix])
+                data[iy,ix] = locale.atof(ss[ix])
             except:
                 print(ss)
                 print(ss[ix])
-                data[iy,ix] = string.atof(ss[ix])
+                data[iy,ix] = locale.atof(ss[ix])
 
     if tr:
         data = transpose(data)
@@ -801,7 +802,7 @@ def loadlist(filename, dir="./"):
 
     list = []
     for i in range(n):
-        list.append(string.atof(sin[i]))
+        list.append(locale.atof(sin[i]))
 
     return list
 
@@ -852,7 +853,7 @@ def loadmachine(filename, dir="", silent=0):
         xx.append(string.atoi(line[1:4]))
         xx.append(string.atoi(line[5:8]))
         cols.append(xx)
-        cat.labels.append(string.split(line[9:])[2])
+        cat.labels.append(line[9:].split()[2])
         line = fin.readline()
 
     nx = len(cat.labels)
@@ -873,7 +874,7 @@ def loadmachine(filename, dir="", silent=0):
             for ix in range(nx):
                 s = line[cols[ix][0]-1:cols[ix][1]]
                 #print cols[ix][0], cols[ix][1], s
-                val = string.atof(s)
+                val = locale.atof(s)
                 exec('cat.%s.append(val)' % cat.labels[ix])
 
     # FINALIZE DATA
@@ -955,7 +956,7 @@ def loadcat2d(filename, dir="", silent=0, labels='x y z'):
     """INPUT: ARRAY w/ SORTED NUMERIC HEADERS (1ST COLUMN & 1ST ROW)
     OUTPUT: A CLASS WITH RECORDS"""
     if type(labels) == str:
-        labels = string.split(labels)
+        labels = labels.split()
     outclass = Cat2D(filename, dir, silent, labels)
     #outclass.z = transpose(outclass.z)  # NOW FLIPPING since 12/5/09
     return outclass
@@ -1001,7 +1002,7 @@ def loadvars(filename, dir="", silent=0):
     if filename[-1] != '+':
         filename += '+'
     data = loaddata(filename, dir, silent)
-    labels = string.split(header[-1][1:])
+    labels = header[-1][1:].split()
     labelstr = string.join(labels, ',')
     print(labelstr + ' = data')
     return 'from coeio import data,labels,labelstr\n' + labelstr + ' = data'  # STRING TO BE EXECUTED AFTER EXIT
@@ -1043,7 +1044,7 @@ class VarsClass:
                     self.header = header or labelheader
                 if header:
                     labelheader = labelheader or header[-1][1:]
-                self.labels = labels or string.split(labelheader)
+                self.labels = labels or labelheader.split()
                 # self.labels = string.split(header[-1][1:])
                 # self.labelstr = string.join(self.labels, ', ')[:-2]
                 self.assigndata()
@@ -1436,7 +1437,7 @@ class VarsClass:
                         if description2:
                             prihdr.update('TFORM%d'%(ilabel+1), format.get(label, 'E'), description2)
                 for inote in range(len(self.notes)):
-                    words = string.split(self.notes[inote], '\n')
+                    words = self.notes[inote].split('\n')
                     for iword in range(len(words)):
                         word = words[iword]
                         if word:
@@ -1445,10 +1446,10 @@ class VarsClass:
                             else:
                                 prihdr.add_comment('    %s' % word)
                                 #prihdr.add_blank(word)
-                headlines = string.split(header, '\n')
+                headlines = header.split('\n')
                 for headline in headlines:
                     if headline:
-                        key, value = string.split(headline, '\t')
+                        key, value = headline.split('\t')
                         prihdr.update(key, value)
                 hdulist.writeto(name)
     def pr(self, header='', more=True):  # print
@@ -1504,7 +1505,7 @@ def loadimcat(filename, dir="", silent=0):
     headlines = 0
     while sin[headlines][0] == '#':
         headlines = headlines + 1
-    names = string.split(sin[headlines-1][1:])
+    names = sin[headlines-1][1:].split()
 
     sin = sin[headlines:]  # REMOVE HEADLINES
     nx = len(names)
@@ -1512,9 +1513,9 @@ def loadimcat(filename, dir="", silent=0):
     data = FltArr(ny,nx)
 
     for iy in range(ny):
-        ss = string.split(sin[iy])
+        ss = sin[iy].split()
         for ix in range(nx):
-            data[iy,ix] = string.atof(ss[ix])
+            data[iy,ix] = locale.atof(ss[ix])
 
     cat = {}
     for i in range(nx):
@@ -1582,7 +1583,7 @@ def prunecols(infile, cols, outfile, separator=" "):
     for line in sin:
         print(line)
         line = string.strip(line)
-        words = string.split(line, separator)
+        words = line.split(separator)
         print(words)
         for col in cols:
             fout.write(words[col-1] + separator)
@@ -1611,7 +1612,7 @@ class SExSegParamsClass:
         for line in txt:
             if string.strip(line) and (line[:1] != '#'):
                 # READ FIRST WORD AND DISCARD IT FROM line
-                key = string.split(line)[0]
+                key = line.split()[0]
                 line = line[len(key):]
                 # READ COMMENT AND DISCARD IT FROM line
                 i = string.find(line, '#')
@@ -1732,15 +1733,15 @@ def loadsexcat(infile, purge=1, maxflags=8, minfwhm=1, minrf=0, maxmag=99, magna
             header.append(sin[0])  # Only add lines beginning with single #
         sin = sin[1:]
 
-    nx = len(string.split(sin[0]))
+    nx = len(sin[0].split())
     ny = len(sin)
     data = FltArr(ny,nx)
 
     for iy in range(ny):
-        ss = string.split(sin[iy])
+        ss = sin[iy].split()
         for ix in range(nx):
             try:
-                data[iy,ix] = string.atof(ss[ix])
+                data[iy,ix] = locale.atof(ss[ix])
             except:
                 print(iy, ix, nx)
                 print(ss)
@@ -1761,7 +1762,7 @@ def loadsexcat(infile, purge=1, maxflags=8, minfwhm=1, minrf=0, maxmag=99, magna
     params = []
     fullparamnames = []
     for headline in header:
-        ss = string.split(headline)  # ['#', '15', 'X_IMAGE', 'Object position along x', '[pixel]']
+        ss = headline.split()  # ['#', '15', 'X_IMAGE', 'Object position along x', '[pixel]']
         if len(ss) == 1:
             break
         col = string.atoi(ss[1])  # 15  -- DON'T SUBTRACT 1 FROM col!  DON'T WANT A 0 COLUMN!  FACILITATES DATA DISTRIBUTION
@@ -1769,7 +1770,7 @@ def loadsexcat(infile, purge=1, maxflags=8, minfwhm=1, minrf=0, maxmag=99, magna
         param = ss[2]    # "X_IMAGE"
         fullparamnames.append(param)
         if param[-1] == ']':
-            param = string.split(param, '[')[0]
+            param = param.split('[')[0]
         if param[:4] == "MAG_":  # MAG_AUTO or MAG_APER but not MAGERR_AUTO
             #if (param == magname) or not magname or 'MAG' not in paramcol.keys():  # magname IF YOU ONLY WANT MAG_AUTO (DEFAULT)
             if (param == magname) or not magname:  # magname IF YOU ONLY WANT MAG_AUTO (DEFAULT)
@@ -1942,7 +1943,7 @@ def loadsexcat(infile, purge=1, maxflags=8, minfwhm=1, minrf=0, maxmag=99, magna
 
     if ma1name:
         #magtype = string.lower(string.split(ma1name, '_')[-1])
-        magtype = string.lower(string.split(ma1name, '[')[0])
+        magtype = string.lower(ma1name.split('[')[0])
         magtype = {'profile':'prof', 'isophotal':'iso'}.get(magtype, magtype)
         pos = string.find(ma1name, '[')
         if pos > -1:
@@ -1988,13 +1989,13 @@ def loadsexdict(sexfile):
     for line in sextext:
         if line:
             if line[0] != '#':
-                words = string.split(line)
+                words = line.split()
                 if len(words) > 1:
                     key = words[0]
                     if key[0] != '#':
                         # sexdict[words[0]] = str2num(words[1])
                         restofline = string.join(words[1:])
-                        value = string.split(restofline, '#')[0]
+                        value = restofline.split('#')[0]
                         if value[0] == '$':
                             i = string.find(value, '/')
                             value = os.getenv(value[1:i]) + value[i:]
@@ -2246,9 +2247,9 @@ def loadpixelscale(image):
         print('PIXEL SCALE NOT GIVEN IN IMAGE HEADER OF', capfile(image, '.fits'))
         pixelscale = 0
     else:
-        s = string.split(s, '/pix')[0]
-        s = string.split(s, '/')[1]
-        pixelscale = string.atof(s[:-1])
+        s = s.split('/pix')[0]
+        s = s.split('/')[1]
+        pixelscale = locale.atof(s[:-1])
     os.remove('temp.txt')
     return pixelscale
 

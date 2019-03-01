@@ -31,6 +31,7 @@ from compress2_py3 import compress2 as compress
 #import popen2
 import subprocess
 import string  # LOAD THIS AFTER numpy, BECAUSE numpy HAS ITS OWN string
+import locale
 
 # ORIGINALLY ksbtools.py
 # NOW coetools.py, BROKEN INTO coeio, smooth
@@ -98,7 +99,7 @@ def cdmk(dir):
 def splitparagraphs(txt):
     paragraphs = ['']
     for line in txt:
-        line = string.strip(line)
+        line = line.strip()
         if not line:
             line = '\n'
         if line[-1] != '\n':
@@ -136,7 +137,7 @@ def comma(x, ndec=0):
     if ndec:
         format = '%%.%df' % ndec
         s = format % x
-        si, sf = string.split(s, '.')
+        si, sf = s.split(s, '.')
         sf = '.' + sf
     else:
         s = '%d' % x
@@ -178,14 +179,14 @@ def str2num(str, rf=0):
     """CONVERTS A STRING TO A NUMBER (INT OR FLOAT) IF POSSIBLE
     ALSO RETURNS FORMAT IF rf=1"""
     try:
-        num = string.atoi(str)
+        num = locale.atoi(str)
         format = 'd'
     except:
         try:
-            num = string.atof(str)
+            num = locale.atof(str)
             format = 'f'
         except:
-            if not string.strip(str):
+            if not str.strip():
                 num = None
                 format = ''
             else:
@@ -253,43 +254,43 @@ def inputnum(question = ''):
     while not done:
         rinp = input(question)
         try: 
-            x = string.atof(rinp)
+            x = locale.atof(rinp)
             done = 1
         except: 
             pass
-    try: x = string.atoi(rinp)
+    try: x = locale.atoi(rinp)
     except: pass
     return x
 
 def stringsplitatoi(str, separator=''):
     if separator:
-        words = string.split(str, separator)
+        words = str.split(separator)
     else:
-        words = string.split(str)
+        words = str.split()
     vals = []
     for word in words:
-        vals.append(string.atoi(word))
+        vals.append(locale.atoi(word))
     return vals
 
 def stringsplitatof(str, separator=''):
     if separator:
-        words = string.split(str, separator)
+        words = str.split(separator)
     else:
-        words = string.split(str)
+        words = str.split()
     vals = []
     for word in words:
-        vals.append(string.atof(word))
+        vals.append(locale.atof(word))
     return vals
 
 def stringsplitstrip(str, separator=''):
     # SPLITS BUT ALSO STRIPS EACH ITEM OF WHITESPACE
     if separator:
-        words = string.split(str, separator)
+        words = str.split(separator)
     else:
-        words = string.split(str)
+        words = str.split()
     vals = []
     for word in words:
-        vals.append(string.strip(word))
+        vals.append(word.strip())
     return vals
 
 def strbegin(str, phr):
@@ -593,7 +594,7 @@ def takeids(data, ids, idrow=0, keepzeros=0):
 #################################
 # FLUX, BPZ
 
-bpzpath = os.environ.get('BPZPATH', '')
+bpzpath = os.environ.get('BPZPY3PATH', '')
 
 def bpzsedname(tb, seds, interp=2):
     if type(seds) == str:
