@@ -16,6 +16,7 @@ import random
 #To use the astrometrical functions defined below
 #try: import ephem
 #except: pass
+import pandas as pd
 
 
 #If biggles installed allow the plot options in the tests
@@ -162,7 +163,42 @@ def write(file,variables,header='',format='',append='no'):
 
 put_data=write
 
+#ADD a function to grab a single column from hdf5 file
+#def get_single_hdf5(file,col):
+#    """
+#    Quick fetching of one column that replaces Dan's
+#    get_data function for grabbing M_0, Z_S, etc...
+#    from columns file
+#    """
+#    df = pd.read_hdf(file,"df")
+#    singlecol = df[col]
+#    singlearray = singlecol.values
+#    return singlearray
+
+
+
 #Read/write 2D arrays
+def get_2Darray_hdf5(file,cols='Null',nrows='Null',verbose=False):
+    """function replacing get_2Darray for reading in the magnitudes and
+    errors from an HDF5 file rather than an ascii file!
+    Parameters:
+      file: input hdf5 file
+      cols: names of columns (tuple)
+      nrows: unused, copying from old definition, we will always grab all rows
+      verbose: binary: whether or not to print a few verbose words to screen
+    Returns: numpy 2D array
+      2D array of values (Nrows x Nfilts)
+    """
+    if verbose:
+        print ("reading data from hdf5 file {} for filters:".format(file))
+        for col in cols:
+            print(col)
+    df = pd.read_hdf(file,"df")
+    smalldf = df.loc[:,cols]
+    outarray = smalldf.values #if we switch to pandas 0.24 or higher
+    #this could be replaced with smalldf.to_numpy()
+    return outarray
+    
 
 def get_2Darray(file,cols='all',nrows='all',verbose='no'):
     """Read the data on the defined columns of a file 
