@@ -57,8 +57,10 @@ def seglist(vals, mask=None):
 #Current directory
 homedir=os.getcwd()
 
-if not path.isdir(homedir + '/../AB/'):
-    os.mkdir(homedir + '/../AB/')
+#Create the AB directory if it doesn't exist
+bpzpath = os.environ.get('BPZPY3PATH', '')
+if not path.isdir(bpzpath + '/AB/'):
+    os.mkdir(bpzpath+'/AB/')
 
 #Parameter definition 
 pars=params()
