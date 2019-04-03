@@ -22,6 +22,7 @@ from numpy import *
 from bpz_tools_py3 import *
 from string import *
 import os,glob,sys
+from os import path, mkdir
 import time 
 import pickle
 import shelve
@@ -55,6 +56,11 @@ def seglist(vals, mask=None):
 
 #Current directory
 homedir=os.getcwd()
+
+#Create the AB directory if it doesn't exist
+bpzpath = os.environ.get('BPZPY3PATH', '')
+if not path.isdir(bpzpath + '/AB/'):
+    os.mkdir(bpzpath+'/AB/')
 
 #Parameter definition 
 pars=params()
