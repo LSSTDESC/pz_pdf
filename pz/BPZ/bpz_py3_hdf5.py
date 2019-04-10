@@ -104,11 +104,13 @@ pars.d={
     'FC':None,
     "ADD_SPEC_PROB":None,
     "ADD_CONTINUOUS_PROB":None,
-    "NMAX": None # Useful for testing
+    "NMAX": None, # Useful for testing
+    "WRITE_FLUX_COMP": 'no' #flag to write flux_comparison file use 'no' rather than False in keepint with BPZ formatting
 }               
 
 
 if pars.d['PLOTS']=='no': plots=0
+if pars.d['WRITE_FLUX_COMP'] == 'no': write_flux_comp = False
 
 if plots:
     # If pylab installed show plots
@@ -1275,7 +1277,7 @@ for ig in range(ng):
             #probs2.write(fmt % tuple(chisqtb))
 
 #if checkSED: open(pars.d['FLUX_COMPARISON'],'w').write(buffer_flux_comparison)
-if checkSED: open(pars.d['CHECK'],'w').write(buffer_flux_comparison)
+if write_flux_comp: open(pars.d['CHECK'],'w').write(buffer_flux_comparison)
 
 if get_z: output.close()
 
