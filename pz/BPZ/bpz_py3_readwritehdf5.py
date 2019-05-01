@@ -107,7 +107,8 @@ pars.d={
     "ADD_CONTINUOUS_PROB":None,
     "NMAX": None, # Useful for testing
     "WRITE_FLUX_COMP": 'no', #flag to write flux_comparison file use 'no' rather than False in keepint with BPZ formatting
-    "H5_CHUNK_SIZE": 10000 #how big of hdf5 chunks to create at a time
+    "H5_CHUNK_SIZE": 10000, #how big of hdf5 chunks to create at a time
+    "OUTPUT_CUT": "Null"
 }               
 
 
@@ -634,7 +635,21 @@ check=pars.d['CHECK']
 
 checkSED = check!='no'
 
+if pars.d['OUTPUT_CUT'] is not "Null":
+    output_cut = float(pars.d['OUTPUT_CUT'])
+    cutmask = (m_0 < output_cut)
+    f_obs = f_obs[cutmask]
+    ef_obs = ef_obs[cutmask]
+    m_0 = m_0[cutmask]
+    z_s = z_s[cutmask]
+    id = id[cutmask]
+    if 'X' in col_pars.d:
+        x = x[cutmask]
+    if 'Y' in col_pars.d:
+        y = y[cutmask]
+
 ng=f_obs.shape[0]
+print ("final length of trimmed dataset: %d"%ng)
 if checkSED:
     # PHOTOMETRIC CALIBRATION CHECK
     #r=zeros((ng,nf),float)+1.
